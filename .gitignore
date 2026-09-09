@@ -18,3 +18,5 @@ Thumbs.db
 .deprecated/
 abstract.md
 .idea/
+code/daemon.pid
+code/daemon.log
