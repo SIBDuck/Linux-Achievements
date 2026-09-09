@@ -1,0 +1,6 @@
+customtkinter==6.0.0
+darkdetect==0.8.0
+packaging==26.3
+plyer==2.1.0
+pygame==2.6.1
+watchdog==6.0.0

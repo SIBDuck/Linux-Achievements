@@ -1,0 +1,238 @@
+{
+  "achievements": {
+    "en": {
+      
+      "vim.close.200": {
+        "id": "vim.close.200",
+        "title": "The Shawshank Escape",
+        "description": "Successfully exit Vim without shutting down terminal.",
+        "category": "vim",
+        "diff": 1,
+        "secret": false
+      },
+      "vim.close.force": {
+        "id": "vim.close.force",
+        "title": "Nano is better!",
+        "description": "Close vim by brutally shutting down terminal",
+        "category": "vim",
+        "diff": 1,
+        "secret": false
+      },
+      "vim.open.vimtutor": {
+        "id": "vim.open.vimtutor",
+        "title": "Enlightment",
+        "description": "Open 'vimtutor'",
+        "category": "vim",
+        "diff": 0,
+        "secret": false
+      },
+      "vim.open.vi": {
+        "id": "vim.open.vi",
+        "title": "Welcome to 1976",
+        "description": "Open vi instead of vim. Know the history of Unix!",
+        "category": "vim",
+        "diff": 0,
+        "secret": false
+      },
+      "vim.time.stockholm.1": {
+        "id": "vim.time.stockholm.1",
+        "title": "Stockholm Syndrome I",
+        "description": "Spend 10 minutes inside vim",
+        "category": "vim",
+        "diff": 1,
+        "secret": false
+      },
+      "vim.time.stockholm.2": {
+        "id": "vim.time.stockholm.2",
+        "title": "Stockholm Syndrome II",
+        "description": "Spend 30 minutes inside vim",
+        "category": "vim",
+        "diff": 2,
+        "secret": false
+      },
+      "vim.time.stockholm.3": {
+        "id": "vim.time.stockholm.3",
+        "title": "Stockholm Syndrome III",
+        "description": "Spend 1 hour inside vim",
+        "category": "vim",
+        "diff": 3,
+        "secret": false
+      },
+      "vim.time.stockholm.4": {
+        "id": "vim.time.stockholm.4",
+        "title": "Stockholm Syndrome IV",
+        "description": "Spend 5 hours inside vim",
+        "category": "vim",
+        "diff": 4,
+        "secret": false
+      },
+      "vim.time.stockholm.5": {
+        "id": "vim.time.stockholm.5",
+        "title": "Stockholm Syndrome V",
+        "description": "Spend 10 hours inside vim",
+        "category": "vim",
+        "diff": 5,
+        "secret": false
+      },
+      "vim.time.stockholm.6": {
+        "id": "vim.time.stockholm.6",
+        "title": "Stockholm Syndrome VI",
+        "description": "Spend 24 hours inside vim",
+        "category": "vim",
+        "diff": 6,
+        "secret": false
+      },
+      "vim.time.stockholm.7": {
+        "id": "vim.time.stockholm.7",
+        "title": "Stockholm Syndrome VII",
+        "description": "Spend 50 hours inside vim",
+        "category": "vim",
+        "diff": 7,
+        "secret": false
+      },
+      "vim.time.stockholm.8": {
+        "id": "vim.time.stockholm.8",
+        "title": "Stockholm Syndrome VIII",
+        "description": "Spend 100 hours inside vim",
+        "category": "vim",
+        "diff": 8,
+        "secret": false
+      },
+      "vim.time.stockholm.9": {
+        "id": "vim.time.stockholm.9",
+        "title": "Stockholm Syndrome IX",
+        "description": "Spend 500 hours inside vim",
+        "category": "vim",
+        "diff": 9,
+        "secret": false
+      },
+      "vim.time.stockholm.10": {
+        "id": "vim.time.stockholm.10",
+        "title": "Stockholm Syndrome X. I'm vim God",
+        "description": "Spend 1000 hours inside vim",
+        "category": "vim",
+        "diff": 10,
+        "secret": false
+      },
+      "vim.safe.file": {
+        "id": "vim.safe.file",
+        "title": "Safe and Sound",
+        "description": "Save a file using `:w` command",
+        "category": "vim",
+        "diff": 1,
+        "secret": false
+      },
+      "nano.open": {
+        "id": "nano.open",
+        "title": "Safe heaven",
+        "description": "Open Nano after panic-closing Vim. Here, at least, the exit keys are written at the bottom.",
+        "category": "nano",
+        "diff": 1,
+        "secret": false
+      },
+      "nano.close.200": {
+        "id": "nano.close.200",
+        "title": "I can read!",
+        "description": "Successfully exit nano because the exit button is literally on the screen.",
+        "category": "nano",
+        "diff": 1,
+        "secret": false
+      },
+      "nano.close.force": {
+        "id": "nano.close.force",
+        "title": "Not mature enough for vim",
+        "description": "Close nano by brutally shutting down terminal",
+        "category": "nano",
+        "diff": -1,
+        "secret": false
+      },
+      "nano.muscle_memory": {
+        "id": "nano.muscle_memory",
+        "title": "Muscle memory",
+        "description": "Type vim command in nano. Old habits die hard.",
+        "category": "nano",
+        "diff": 2,
+        "secret": false
+      },
+      "vim_nano.new_exisitng_file": {
+        "id": "vim_nano.new_exisitng_file",
+        "title": "I wanted to create a new file or open an existing one?",
+        "description": "Create a new file, similar to existing one, using vim or nano",
+        "category": ["vim", "nano"],
+        "diff": 1,
+        "secret": false
+      },
+      "sh.open.bash": {
+        "id": "sh.open.bash",
+        "title": "The Born-Again Shell",
+        "description": "Open bash",
+        "category": "sh",
+        "diff": 1,
+        "secret": false
+      },
+      "sh.open.zsh": {
+        "id": "sh.open.zsh",
+        "title": "Stylish choice",
+        "description": "Open zsh",
+        "category": "sh",
+        "diff": 3,
+        "secret": false
+      },
+      "sh.kill_try": {
+        "id": "sh.kill_try",
+        "title": "An assassination attempt!",
+        "description": "Type rm -rf / and fail",
+        "category": "sh",
+        "diff": 4,
+        "secret": false
+      },
+      "sh.poweroff": {
+        "id": "sh.poweroff",
+        "title": "Annoying I",
+        "description": "Get an error typed `sudo poweroff`",
+        "category": "sh",
+        "diff": 3,
+        "secret": false
+      },
+      "sh.reboot": {
+        "id": "sh.reboot",
+        "title": "Annoying II",
+        "description": "Get an error typed `sudo reboot`",
+        "category": "sh",
+        "diff": 3,
+        "secret": false
+      },
+      "sh.xray": {
+        "id": "sh.xray",
+        "title": "I can see right through you!",
+        "description": "Use `ls -a` to see hidden files",
+        "category": "sh",
+        "diff": 2,
+        "secret": false
+      },
+      "sh.shrc": {
+        "id": "sh.shrc",
+        "title": "Wanna be stylish?",
+        "description": "Start editing your configuration file `.bashrc` or `.zshrc` with the text editor (vi, vim, nvim, micro, emacs, nano)",
+        "category": "sh",
+        "diff": 3,
+        "secret": false
+      },
+      "sh.repeater": {
+        "id": "sh.repeater",
+        "title": "Parrot-repeater",
+        "description": "Call the last command using !! 3 times",
+        "category": "sh",
+        "diff": 3,
+        "secret": false
+      },
+      "sh.cheater": {
+        "id": "sh.cheater",
+        "title": "Cheater!",
+        "description": "Try to cheat an achievement",
+        "diff": 4,
+        "secret": false
+      }
+    }
+  }
+}

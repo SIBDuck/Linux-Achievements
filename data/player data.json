@@ -1,0 +1,125 @@
+{
+  "achievements": {
+    "vim.close.200": {
+      "id": "vim.close.200",
+      "done": false
+    },
+    "vim.close.force": {
+    "id": "vim.close.force",
+    "done": false
+    },
+    "vim.open.vimtutor": {
+    "id": "vim.open.vimtutor",
+    "done": false
+    },
+    "vim.open.vi": {
+    "id": "vim.open.vi",
+    "done": false
+    },
+    "vim.time.stockholm.1": {
+    "id": "vim.time.stockholm.1",
+    "done": false
+    },
+    "vim.time.stockholm.2": {
+    "id": "vim.time.stockholm.2",
+    "done": false
+    },
+    "vim.time.stockholm.3": {
+    "id": "vim.time.stockholm.3",
+    "done": false
+    },
+    "vim.time.stockholm.4": {
+    "id": "vim.time.stockholm.4",
+    "done": false
+    },
+    "vim.time.stockholm.5": {
+    "id": "vim.time.stockholm.5",
+    "done": false
+    },
+    "vim.time.stockholm.6": {
+    "id": "vim.time.stockholm.6",
+    "done": false
+    },
+    "vim.time.stockholm.7": {
+    "id": "vim.time.stockholm.7",
+    "done": false
+    },
+    "vim.time.stockholm.8": {
+    "id": "vim.time.stockholm.8",
+    "done": false
+    },
+    "vim.time.stockholm.9": {
+    "id": "vim.time.stockholm.9",
+    "done": false
+    },
+    "vim.time.stockholm.10": {
+    "id": "vim.time.stockholm.10",
+    "done": false
+    },
+    "vim.safe.file": {
+    "id": "vim.safe.file",
+    "done": false
+    },
+    "nano.open": {
+    "id": "nano.open",
+    "done": false
+    },
+    "nano.close.200": {
+    "id": "nano.close.200",
+    "done": false
+    },
+    "nano.close.force": {
+    "id": "nano.close.force",
+    "done": false
+    },
+    "nano.muscle_memory": {
+    "id": "nano.muscle_memory",
+    "done": false
+    },
+    "vim_nano.new_exisitng_file": {
+    "id": "vim_nano.new_exisitng_file",
+    "done": false
+    },
+    "sh.open.bash": {
+    "id": "sh.open.bash",
+    "done": false
+    },
+    "sh.open.zsh": {
+    "id": "sh.open.zsh",
+    "done": false
+    },
+    "sh.kill_try": {
+    "id": "sh.kill_try",
+    "done": false
+    },
+    "sh.poweroff": {
+    "id": "sh.poweroff",
+    "done": false
+    },
+    "sh.reboot": {
+    "id": "sh.reboot",
+    "done": false
+    },
+    "sh.xray": {
+    "id": "sh.xray",
+    "done": false
+    },
+   "sh.shrc": {
+    "id": "sh.shrc",
+    "done": false
+    },
+    "sh.repeater": {
+    "id": "sh.repeater",
+    "done": false
+    },
+    "sh.cheater": {
+    "id": "sh.cheater",
+    "done": false
+    }
+},
+  "stats": {
+    "time": {
+      "vim": 0
+    }
+}
+}

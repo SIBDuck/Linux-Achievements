@@ -1,0 +1,88 @@
+# ====================================================================
+# КОРПОРАТИВНЫЕ ИИ-БОТЫ (ОБУЧЕНИЕ МОДЕЛЕЙ И ИИ-ПОИСК)
+# ====================================================================
+
+# OpenAI (ChatGPT, Sora, Поиск)
+User-agent: GPTBot
+Disallow: /
+User-agent: OAI-SearchBot
+Disallow: /
+
+# Google (Gemini, Сбор датасетов)
+User-agent: Google-Extended
+Disallow: /
+
+# Anthropic (Claude, Обучение и Поиск)
+User-agent: ClaudeBot
+Disallow: /
+User-agent: Claude-SearchBot
+Disallow: /
+
+# Meta (Llama и AI-ассистенты)
+User-agent: Meta-ExternalAgent
+Disallow: /
+User-agent: Meta-ExternalFetcher
+Disallow: /
+
+# Apple (Apple Intelligence)
+User-agent: AppleBot-Extended
+Disallow: /
+
+# Microsoft & LinkedIn (Обучение ИИ)
+User-agent: LinkedInBot
+Disallow: /
+User-agent: MSRBot
+Disallow: /
+
+# Amazon
+User-agent: Amazonbot
+Disallow: /
+
+# ====================================================================
+# НЕЗАВИСИМЫЕ ИИ-ПОИСКОВИКИ И СБОРЩИКИ ДАТАСЕТОВ
+# ====================================================================
+
+# Perplexity AI
+User-agent: PerplexityBot
+Disallow: /
+
+# Common Crawl (Огромный архив, откуда ИИ качают данные гигабайтами)
+User-agent: CCBot
+Disallow: /
+
+# Cohere (Разработка LLM для бизнеса)
+User-agent: cohere-ai
+Disallow: /
+
+# You.com (ИИ-поисковик)
+User-agent: YouBot
+Disallow: /
+
+# Diffbot (Коммерческий ИИ-скрейпинг)
+User-agent: Diffbot
+Disallow: /
+
+# Omegaboot
+User-agent: Omegabot
+Disallow: /
+
+# Imagesis (Сбор картинок для генеративного ИИ)
+User-agent: img2dataset
+Disallow: /
+
+# ====================================================================
+# КИТАЙСКИЕ ИИ-БОТЫ И СКРЕЙПЕРЫ
+# ====================================================================
+
+# ByteDance (Владельцы TikTok, активно обучают свои LLM)
+User-agent: Bytespider
+Disallow: /
+
+# Baidu AI
+User-agent: Baidu-Aibot
+Disallow: /
+
+# DeepSeek AI
+User-agent: DeepseekBot
+Disallow: /
+

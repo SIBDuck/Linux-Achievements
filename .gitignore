@@ -1,0 +1,20 @@
+# Cache
+__pycache__/
+*.py[cod]
+*.class
+
+# Virtual envs
+venv/
+env/
+ENV/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+# Project files
+.deprecated/
+abstract.md
+.idea/
