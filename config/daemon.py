@@ -92,32 +92,6 @@ class FileChangeHandler(FileSystemEventHandler):
             except FileNotFoundError:
                 pass
 
-    """def on_modified(self, event):
-        if os.path.abspath(event.src_path) == os.path.abspath(vars.PATH_LCMD):
-            try:
-                with open(vars.PATH_LCMD, "r", encoding="utf-8", errors="ignore") as f:
-                    new_cmd = f.read().strip()
-                if new_cmd and new_cmd != vars.cmd:
-                    vars.cmd = new_cmd
-                    parser.Parser.parse_list(vars.cmd)
-                    ach.update(vars.parsed)
-
-            except FileNotFoundError:
-                path_obj = pathlib.Path(vars.PATH_LCMD)
-                path_obj.parent.mkdir(parents=True, exist_ok=True)
-                path_obj.touch()
-
-        elif os.path.abspath(event.src_path) == os.path.abspath(vars.PATH_EDITOR):
-            try:
-                with open(vars.PATH_EDITOR, "r", encoding="utf-8", errors="ignore") as f:
-                    new_editor = f.read().strip()
-                if new_editor and new_editor != vars.editor:
-                    vars.editor = new_editor
-            except FileNotFoundError:
-                path_obj = pathlib.Path(vars.PATH_EDITOR)
-                path_obj.parent.mkdir(parents=True, exist_ok=True)
-                path_obj.touch()"""
-
 def main():
     #print("Running...")
     path_obj = pathlib.Path(v.PATH_LCMD)
