@@ -3,8 +3,11 @@ __pycache__/
 *.py[cod]
 *.class
 *.spec
+*.pyc
 # Virtual envs
 venv/
+.venv/
+.uv/
 env/
 ENV/
 
@@ -18,7 +21,6 @@ Thumbs.db
 .deprecated/
 abstract.md
 .idea/
-code/daemon.pid
-code/daemon.log
+tmp/*
 build/
 dist/
