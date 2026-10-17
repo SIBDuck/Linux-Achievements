@@ -13,16 +13,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
+"""The module that contains variables"""
 
 import os
 import pathlib
-
+HOME_DIR = pathlib.Path.home()
 PATH = os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}") + "/linux-achievements"
 PATH_LCMD = PATH + "/last_cmd"
 PATH_EDITOR = PATH + "/editor"
-LOG_FILE_PATH = pathlib.Path(__file__).resolve().parent / 'daemon.log'
-
+PROJECT_DIR = HOME_DIR / "Linux Achievements"
+LOG_FILE_PATH = HOME_DIR / 'Linux Achievements' / "tmp" / 'daemon.log'
+DATA_PATH = PROJECT_DIR / "data" / "player data.json"
+ACHIEVEMENT_PATH = PROJECT_DIR / "data" / "achievements.json"
+DAEMON_NAME = "lad"
+DAEMON_PID_PATH = HOME_DIR / "Linux Achievements" / "tmp" / "daemon.pid"
 cmd = ''
 parsed = ''
 vim_time_s = 0
@@ -54,5 +58,6 @@ repeater_flag = False
 nano_close_flag = False
 nano_open_flag = False
 vim_nano_exst_flag = False
+t1 = 0
 
 repeater_times = 0

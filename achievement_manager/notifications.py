@@ -18,7 +18,13 @@
 from plyer import notification
 import warnings
 import os
-import variables as vars
+import pathlib
+import sys
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+from config import variables as v
 
 warnings.filterwarnings("ignore")
 
@@ -26,7 +32,7 @@ def show_achievement(title, message):
     notification.notify(
         title=title,
         message=message,
-        app_name=vars.APP_NAME,
-    app_icon=vars.APP_ICON,
+        app_name=v.APP_NAME,
+        app_icon=v.APP_ICON,
+        timeout=5
     )
-

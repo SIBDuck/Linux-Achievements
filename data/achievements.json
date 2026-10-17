@@ -1,7 +1,5 @@
 {
-  "achievements": {
-    "en": {
-      
+
       "vim.close.200": {
         "id": "vim.close.200",
         "title": "The Shawshank Escape",
@@ -221,7 +219,7 @@
       "sh.repeater": {
         "id": "sh.repeater",
         "title": "Parrot-repeater",
-        "description": "Call the last command using !! 3 times",
+        "description": "Call the last command using `!!` 3 times in a row",
         "category": "sh",
         "diff": 3,
         "secret": false
@@ -233,6 +231,6 @@
         "diff": 4,
         "secret": false
       }
-    }
-  }
+
+
 }

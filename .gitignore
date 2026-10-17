@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *.class
-
+*.spec
 # Virtual envs
 venv/
 env/
@@ -20,3 +20,5 @@ abstract.md
 .idea/
 code/daemon.pid
 code/daemon.log
+build/
+dist/

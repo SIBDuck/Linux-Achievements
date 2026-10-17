@@ -12,12 +12,27 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+import subprocess
+while 1:
+    try:
+        inp = input("> ")
+        match inp:
+            case ":!cl":
+                subprocess.run(["clear"], stderr=subprocess.DEVNULL)
+            case ":!quit":
+                break
+            case _:
+                print(inp[::-1])
 
-
-
+    except KeyboardInterrupt:
+        print("\nbye")
+        break"""
+"""
 import customtkinter as ctk
 from PIL import Image, ImageTk
 app = ctk.CTk()
+"""
 """
 def set_icon():
     img = Image.open("images/tux.png")
@@ -25,7 +40,7 @@ def set_icon():
     app.iconphoto(False, photo)
     app._icon_photo = photo
 
-app.after(200, set_icon)
+app.after(200, set_icon)"""
 """
 app.title("Linux Achievements")
 app.geometry("900x900")
@@ -36,4 +51,6 @@ def press():
 but = ctk.CTkButton(app, text="hi", command=press)
 but.grid(row=0, column=0, padx=20, pady=20)
 
-app.mainloop()
+app.mainloop()"""
+
+

@@ -19,34 +19,88 @@
 
 import os
 import atexit
+import pathlib
+import sys
+import sys
+import pathlib
 
-with open("daemon.pid", "w") as f:
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+CONFIG_DIR = ROOT_DIR / "config"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
+
+try:
+    import variables as v
+except ModuleNotFoundError:
+    sys.path.insert(0, str(pathlib.Path.home() / "Linux Achievements" / "config"))
+    import variables as v
+
+
+with open(v.DAEMON_PID_PATH, "w") as f:
     f.write(str(os.getpid()))
 
 def remove_pid():
-    if os.path.exists("daemon.pid"):
-        os.remove("daemon.pid")
+    if os.path.exists(v.DAEMON_PID_PATH):
+        os.remove(v.DAEMON_PID_PATH)
 atexit.register(remove_pid)
 
 
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-import variables as vars
-import parsecmd
-import pathlib
-import subprocess
+import cmd_parser
+from achievement_manager import manager as mgr
+
+ach = mgr.Achievement()
+def init_ram_dir():
+    for path_str in [v.PATH_LCMD, v.PATH_EDITOR]:
+        path_obj = pathlib.Path(path_str)
+        path_obj.parent.mkdir(parents=True, exist_ok=True)
+        if not path_obj.exists():
+            path_obj.touch()
+
+init_ram_dir()
 
 class FileChangeHandler(FileSystemEventHandler):
     def on_modified(self, event):
+        abs_src = os.path.abspath(event.src_path)
+        if abs_src == os.path.abspath(v.PATH_LCMD):
+            try:
+                with open(v.PATH_LCMD, "r", encoding="utf-8") as f:
+                    new_cmd = f.read().strip()
+                if new_cmd:
+                    v.cmd = new_cmd
+                    cmd_parser.Parser.parse_list()
+                    current_trigger = (v.parsed[0], v.parsed[1])
+
+                    if not hasattr(v, "last_trigger") or v.last_trigger != current_trigger:
+                        v.last_trigger = current_trigger
+                        ach.update(v.parsed)
+
+
+            except FileNotFoundError:
+                pass
+        elif abs_src == os.path.abspath(v.PATH_EDITOR):
+            try:
+                with open(v.PATH_EDITOR, "r", encoding="utf-8", errors="ignore") as f:
+                    new_editor = f.read().strip()
+                if new_editor and new_editor != v.editor:
+                    v.editor = new_editor
+            except FileNotFoundError:
+                pass
+
+    """def on_modified(self, event):
         if os.path.abspath(event.src_path) == os.path.abspath(vars.PATH_LCMD):
             try:
                 with open(vars.PATH_LCMD, "r", encoding="utf-8", errors="ignore") as f:
                     new_cmd = f.read().strip()
                 if new_cmd and new_cmd != vars.cmd:
                     vars.cmd = new_cmd
-                    parsecmd.parse()
-
+                    parser.Parser.parse_list(vars.cmd)
+                    ach.update(vars.parsed)
 
             except FileNotFoundError:
                 path_obj = pathlib.Path(vars.PATH_LCMD)
@@ -62,18 +116,16 @@ class FileChangeHandler(FileSystemEventHandler):
             except FileNotFoundError:
                 path_obj = pathlib.Path(vars.PATH_EDITOR)
                 path_obj.parent.mkdir(parents=True, exist_ok=True)
-                path_obj.touch()
-
+                path_obj.touch()"""
 
 def main():
-
     #print("Running...")
-    path_obj = pathlib.Path(vars.PATH_LCMD)
+    path_obj = pathlib.Path(v.PATH_LCMD)
     path_obj.parent.mkdir(parents=True, exist_ok=True)
     if not path_obj.exists():
         path_obj.touch()
 
-    watch_dir = os.path.dirname(vars.PATH_LCMD)
+    watch_dir = os.path.dirname(v.PATH_LCMD)
     event_handler = FileChangeHandler()
     observer = Observer()
     observer.schedule(event_handler, path=watch_dir, recursive=False)

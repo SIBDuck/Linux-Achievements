@@ -19,16 +19,13 @@ import time
 import os
 import sys
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
 
-project_root = os.path.dirname(current_dir)
+import pathlib
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
 
-hidden_dir = os.path.join(project_root, ".config_shrc")
-
-sys.path.append(hidden_dir)
-
-import installer_shell # The error could be ignored
-
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+from config_shrc import installer_shell
 
 class Installer:
     @staticmethod
@@ -50,8 +47,7 @@ class Installer:
                         print("\nQuiting installing mode...")
                         return
                     case "bash" | "zsh" | "fish" as shell:
-                        print(f"Are you sure you want to install the config for {shell}? [Y/n]")
-                        inp1 = input("(install-config)> ")
+                        inp1 = input(f"Are you sure you want to install the config for {shell}? [Y/n] (install-config)> ")
                         match inp1:
                             case "" | "Y" | "y":
                                 Installer.install_config_shell(shell)
