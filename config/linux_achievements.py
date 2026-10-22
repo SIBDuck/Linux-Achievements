@@ -26,12 +26,12 @@ import json
 import cmd_parser
 
 # Getting paths
-ach_path, data_path = cmd_parser.Parser.paths()
+ach_path, data_path = cmd_parser.parser.paths()
 
 running = True
 import install_conf
 import variables as v
-
+import psutil
 
 class Parser:
     # Regular expressions to parse strings from the utility
@@ -407,45 +407,92 @@ class Daemon:
             try:
                 pid = int(pids.read().strip())
                 return pid
-
             except ValueError:
-                print(
-                    "PID file was corrupted... Cleaning up. Find and kill the daemon on your own if it's still running")
-                if os.path.exists(v.DAEMON_PID_PATH):
-                    os.remove(v.DAEMON_PID_PATH)
                 return None
 
+    @staticmethod
+    def start_daemon(reboot):
+        daemon_binary_path = pathlib.Path.home() / ".local" / "bin" / v.DAEMON_NAME
+        try:
+            with open(os.devnull, 'r') as devnull_in, \
+                    open(v.LOG_FILE_PATH, 'w', encoding='utf-8', buffering=1) as log_out:
+                subprocess.Popen(
+                    [str(daemon_binary_path)],
+                    stdin=devnull_in,
+                    stdout=log_out,
+                    stderr=log_out,
+                    start_new_session=True
+                )
+            if not reboot:
+                print("[+] Daemon successfully started in background.")
+            else:
+                print("[+] Daemon successfully rebooted and started in background.")
+        except FileNotFoundError:
+            print(f"[!] Error: Binary file not found at {daemon_binary_path}")
+            print("Make sure you compiled 'daemon.py' and moved it to ~/.local/bin/")
+        except Exception as e:
+            if not reboot:
+                print(f"[!] Unexpected error starting daemon: {e}")
+            else:
+                print(f"[!] Unexpected error during rebooting daemon: {e}")
     @staticmethod
     def start(reboot=False):
         if os.path.exists(v.DAEMON_PID_PATH):
             pid = Daemon.get_pid()
             if pid is None:
-                print("Unable to get PID.")
-                return
+                pid = Daemon.ps_by_name()
+                with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                    f.write(str(pid))
+                if pid is None:
+                    Daemon.start_daemon(reboot)
+                    return
+                print("The daemon is still running")
         else:
-            daemon_binary_path = pathlib.Path.home() / ".local" / "bin" / v.DAEMON_NAME
-            try:
-                with open(os.devnull, 'r') as devnull_in, \
-                        open(v.LOG_FILE_PATH, 'w', encoding='utf-8', buffering=1) as log_out:
-                    subprocess.Popen(
-                        [str(daemon_binary_path)],
-                        stdin=devnull_in,
-                        stdout=log_out,
-                        stderr=log_out,
-                        start_new_session=True
-                    )
-                if not reboot:
-                    print("[+] Daemon successfully started in background.")
-                else:
-                    print("[+] Daemon successfully rebooted and started in background.")
-            except FileNotFoundError:
-                print(f"[!] Error: Binary file not found at {daemon_binary_path}")
-                print("Make sure you compiled 'daemon.py' and moved it to ~/.local/bin/")
-            except Exception as e:
-                if not reboot:
-                    print(f"[!] Unexpected error starting daemon: {e}")
-                else:
-                    print(f"[!] Unexpected error rebooting daemon: {e}")
+            with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                f.write("")
+            pid = Daemon.ps_by_name()
+            with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                f.write(str(pid))
+            if pid is None:
+                Daemon.start_daemon(reboot)
+                return
+            print("The daemon is still running")
+    @staticmethod
+    def stop_by_pid(pid):
+        info = dict()
+        try:
+            with open(f"/proc/{pid}/status", "r", encoding="utf-8") as prc:
+                for line in prc:
+                    if line.startswith(("Name:", "Pid:")):
+                        key, value = line.split(":", 1)
+                        key = key.lower()
+                        info[key.strip()] = value.strip()
+                if info:
+                    if info['name'] == v.DAEMON_NAME:
+                        if info['pid']:
+                            try:
+                                os.kill(pid, signal.SIGTERM)
+                                for _ in range(10):
+                                    try:
+                                        os.kill(pid, 0)
+                                    except ProcessLookupError:
+                                        print("[+] Process successfully stopped.")
+                                        break
+                                    time.sleep(0.5)
+                                else:
+                                    print("[!] Process is taking too long to stop. Killing it forcibly...")
+                                    try:
+                                        os.kill(pid, signal.SIGKILL)
+                                        print("[+] Process killed forcefully.")
+                                    except ProcessLookupError:
+                                        pass
+                            except ProcessLookupError:
+                                print("[-] Process not found in system.")
+                    else:
+                        print("The process exists, but it's not the daemon.")
+        except Exception as e:
+            pass
+
 
     @staticmethod
     def stop():
@@ -463,40 +510,42 @@ class Daemon:
                             key = key.lower()
                             info[key.strip()] = value.strip()
                 if info:
-                    if info['name'] == v.DAEMON_NAME and info['pid']:
-                        try:
-                            os.kill(pid, signal.SIGTERM)
-                            for _ in range(10):
-                                try:
-                                    os.kill(pid, 0)
-                                except ProcessLookupError:
-                                    print("[+] Daemon successfully stopped.")
-                                    break
-                                time.sleep(0.5)
-                            else:
-                                print("[!] Daemon is taking too long to stop. Killing it forcibly...")
-                                try:
-                                    os.kill(pid, signal.SIGKILL)
-                                    print("[+] Daemon killed forcefully.")
-                                except ProcessLookupError:
-                                    pass
-                        except ProcessLookupError:
-                            print("[-] Process not found in system.")
-                        if os.path.exists(v.DAEMON_PID_PATH):
-                            print("Cleaning up frozen PID file...")
-                            os.remove(v.DAEMON_PID_PATH)
-                            return
+                    if info['name'] == v.DAEMON_NAME:
+                        if info['pid']:
+                            try:
+                                os.kill(pid, signal.SIGTERM)
+                                for _ in range(10):
+                                    try:
+                                        os.kill(pid, 0)
+                                    except ProcessLookupError:
+
+                                        print("[+] Daemon successfully stopped.")
+                                        break
+                                    time.sleep(0.5)
+                                else:
+                                    print("[!] Daemon is taking too long to stop. Killing it forcibly...")
+                                    try:
+                                        os.kill(pid, signal.SIGKILL)
+                                        print("[+] Daemon killed forcefully.")
+                                        with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                                            f.write("")
+                                    except ProcessLookupError:
+                                        pass
+                            except ProcessLookupError:
+                                print("[-] Process not found in system.")
+                            with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                                f.write("")
                     else:
-                        print("The process exists, but it's not the daemon.")
-
+                        print("The process exists, but it's not the daemon. Cleaning pid file...")
+                        with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                            f.write("")
             except FileNotFoundError:
-
-                print("[+] Daemon successfully stopped.")
-                if os.path.exists(v.DAEMON_PID_PATH):
-                    os.remove(v.DAEMON_PID_PATH)
-                return
+                pass
         else:
-            print("PID file does not exist (Daemon is already stopped or the file was killed forcibly)")
+            print("PID file does not exist. Touching it...")
+            with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                f.write("")
+            print("PID file successfully touched")
 
     @staticmethod
     def last_cmd():
@@ -504,26 +553,81 @@ class Daemon:
             logs = log_file.read().strip()
         print(logs)
 
+    # Find process by name
+    @staticmethod
+    def ps_by_name():
+        pid = None
+        target_bin_path = str(pathlib.Path(v.DAEMON_BIN_PATH).resolve())
+        for proc in psutil.process_iter(['pid', 'exe', 'name']):
+            try:
+                if proc.info['name'] == v.DAEMON_NAME:
+                    if proc.info['exe']:
+                        current_bin_path = str(pathlib.Path(proc.info['exe']).resolve())
+                        if current_bin_path == target_bin_path:
+                            pid = proc.info['pid']
+                            break
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+        return pid
+    @staticmethod
+    def pid_check(pid_list: list):
+        info = dict()
+        if len(pid_list) > 2:
+            while True:
+                ans = input("More than one process found in system. Do you want to kill them? [y/n] >")
+                if ans == "y":
+                    for pid in pid_list:
+                        try:
+                            with open(f"/proc/{pid}/status", "r", encoding='utf-8') as pc:
+                                for line in pc:
+                                    if line.startswith(("Name:", "Pid:")):
+                                        key, value = line.split(":", 1)
+                                        key = key.lower()
+                                        info[key.strip()] = value.strip()
+                        except FileNotFoundError:
+                            pass
+                        if info:
+                            if info["name"] == v.DAEMON_NAME:
+                                Daemon.stop_by_pid(pid)
+                    print("Processes were killed successfully")
+                    return True
+                elif ans == "n":
+                    return False
+                else:
+                    continue
+
+
+
+
     @staticmethod
     def status():
+        pid1 = Daemon.ps_by_name()
+
+
         if not os.path.exists(v.DAEMON_PID_PATH):
-            print("[•] Status: STOPPED (PID file does not exist)")
+            if pid1 is None:
+                print("[•] Status: STOPPED")
+            else:
+                print(f"[•] Status: RUNNING (PID: {pid1})")
 
         else:
             with open(v.DAEMON_PID_PATH, 'r') as f:
-                pid = int(f.read().strip())
-
+                try:
+                    pid = int(f.read().strip())
+                except ValueError:
+                    print("[•] Status: STOPPED (Nothing is in PID file)")
+                    return
             try:
                 os.kill(pid, 0)
                 print(f"[•] Status: RUNNING (PID: {pid})")
 
             except (ProcessLookupError, ValueError):
-                print(
-                    "[•] Status: CRASHED / DEAD (PID file exists, but process is not running)")
+                print("[•] Status: CRASHED / DEAD (PID is written in PID file, but process is not running)")
 
                 try:
-                    os.remove('daemon.pid')
-                    print("[+] Cleaned up dead PID file.")
+                    with open(v.DAEMON_PID_PATH, "w", encoding='utf-8') as f:
+                        f.write("")
+                    print("[+] Cleaned dead PID file.")
                 except OSError:
                     pass
 
@@ -536,7 +640,6 @@ class Daemon:
     def rm_logs():
         with open(v.LOG_FILE_PATH, "w", encoding='utf-8') as logs:
             logs.write("")
-
         print("Successfully cleared the log file")
 
     @staticmethod

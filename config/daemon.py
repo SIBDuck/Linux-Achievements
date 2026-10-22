@@ -19,8 +19,6 @@
 
 import os
 import atexit
-import pathlib
-import sys
 import sys
 import pathlib
 
@@ -43,8 +41,8 @@ with open(v.DAEMON_PID_PATH, "w") as f:
     f.write(str(os.getpid()))
 
 def remove_pid():
-    if os.path.exists(v.DAEMON_PID_PATH):
-        os.remove(v.DAEMON_PID_PATH)
+    with open(v.DAEMON_PID_PATH, "w", encoding="utf-8") as f:
+        f.write("")
 atexit.register(remove_pid)
 
 
@@ -63,7 +61,6 @@ def init_ram_dir():
             path_obj.touch()
 
 init_ram_dir()
-
 class FileChangeHandler(FileSystemEventHandler):
     def on_modified(self, event):
         abs_src = os.path.abspath(event.src_path)
@@ -73,13 +70,12 @@ class FileChangeHandler(FileSystemEventHandler):
                     new_cmd = f.read().strip()
                 if new_cmd:
                     v.cmd = new_cmd
-                    cmd_parser.Parser.parse_list()
+                    cmd_parser.parser.parse_list()
                     current_trigger = (v.parsed[0], v.parsed[1])
 
                     if not hasattr(v, "last_trigger") or v.last_trigger != current_trigger:
                         v.last_trigger = current_trigger
                         ach.update(v.parsed)
-
 
             except FileNotFoundError:
                 pass
@@ -93,23 +89,19 @@ class FileChangeHandler(FileSystemEventHandler):
                 pass
 
 def main():
-    #print("Running...")
     path_obj = pathlib.Path(v.PATH_LCMD)
     path_obj.parent.mkdir(parents=True, exist_ok=True)
-    if not path_obj.exists():
-        path_obj.touch()
+    path_obj.touch(exist_ok=True)
 
-    watch_dir = os.path.dirname(v.PATH_LCMD)
     event_handler = FileChangeHandler()
     observer = Observer()
-    observer.schedule(event_handler, path=watch_dir, recursive=False)
+    observer.schedule(event_handler, path = str(path_obj.parent), recursive = False)
     observer.daemon = True
     observer.start()
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        #print("\nStopping...")
         observer.stop()
 
     observer.join()

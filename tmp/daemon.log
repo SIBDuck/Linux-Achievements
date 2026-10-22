@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "daemon.py", line 103, in main
+    time.sleep(1)
+    ~~~~~~~~~~^^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "daemon.py", line 110, in <module>
+    main()
+    ~~~~^^
+  File "daemon.py", line 105, in main
+    observer.stop()
+    ~~~~~~~~~~~~~^^
+  File "watchdog/observers/api.py", line 185, in stop
+KeyboardInterrupt
+[PYI-16209:ERROR] Failed to execute script 'daemon' due to unhandled exception!

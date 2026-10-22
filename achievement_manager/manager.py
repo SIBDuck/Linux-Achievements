@@ -229,12 +229,11 @@ class Achievement:
             self.show_ach(ach)
     def vim_nano_exist(self, pcmd):
         cmd = " ".join(str(arg) for arg in pcmd[2:]).strip()
-        ach = "vim_nano.new_exisiting_file"
-        ach_meta = self.player_data["achievements"][ach]
+        ach = "vim_nano.new_exisitng_file"
         match = re.match(v.vim_nano_exst_find_re, cmd)
-        path = next(item for item in match.groups() if item is not None).strip().replace('\\ ', ' ')
+        if match:
+            path = next(item for item in match.groups() if item is not None).strip().replace('\\ ', ' ')
 
-        full_path = os.path.expanduser(path)
-        if not os.path.exists(full_path):
-            self.show_ach(ach)
-        #TODO: check this out!
+            full_path = os.path.expanduser(path)
+            if not os.path.exists(full_path):
+                self.show_ach(ach)
