@@ -384,7 +384,7 @@ class Daemon:
     def start(reboot=False):
         proc = Daemon.find_daemon_process()
         if proc:
-            print("[-] Daemon is already running.")
+            print(f"[-] Daemon is already running (PID: {proc.pid}).")
             Daemon.write_pid(proc.pid)  # синхронизируем кэш
             return
         try:
@@ -398,13 +398,13 @@ class Daemon:
                     start_new_session=True, )
 
             Daemon.write_pid(proc.pid)
-            print("[+] Daemon successfully started in background." if not reboot
-                  else "[+] Daemon successfully rebooted and started in background.")
+            print(f"[+] Daemon successfully started in background (PID: {proc.pid})." if not reboot
+        else f"[+] Daemon successfully rebooted and started in background (PID: {proc.pid}).")
         except FileNotFoundError:
             print(f"[!] Error: Binary file not found at {v.DAEMON_BIN_PATH}")
         except Exception as e:
             prefix = "rebooting daemon" if reboot else "starting daemon"
-            print(f"[!] Unexpected error during {prefix}: {e}")
+            print(f"[!] Unexpected error while {prefix}: {e}")
 
     @staticmethod
     def reboot():

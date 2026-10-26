@@ -114,7 +114,7 @@
         },
         "sh.cheater": {
             "id": "sh.cheater",
-            "done": false
+            "done": true
         }
     },
     "stats": {
