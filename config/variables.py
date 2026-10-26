@@ -17,37 +17,34 @@
 
 import os
 import pathlib
+
+# Names
+DAEMON_NAME = "lad"
+UTILITY_NAME = "la"
+APP_NAME = "Linux Achievements"
+# Paths
 HOME_DIR = pathlib.Path.home()
 PATH = os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}") + "/linux-achievements"
 PATH_LCMD = PATH + "/last_cmd"
 PATH_EDITOR = PATH + "/editor"
 PROJECT_DIR = HOME_DIR / "Linux Achievements"
+APP_ICON = PROJECT_DIR / "images" / "tux.png"
 LOG_FILE_PATH = HOME_DIR / 'Linux Achievements' / "tmp" / 'daemon.log'
 DATA_PATH = PROJECT_DIR / "data" / "player data.json"
 ACHIEVEMENT_PATH = PROJECT_DIR / "data" / "achievements.json"
-DAEMON_NAME = "lad"
+
 DAEMON_BIN_PATH = HOME_DIR / ".local" / "bin" / DAEMON_NAME
 DAEMON_PID_PATH = HOME_DIR / "Linux Achievements" / "tmp" / "daemon.pid"
+
 cmd = ''
 parsed = ''
+# State variables
 vim_time_s = 0
 vim_time_ = 0
 vim_tm1 = 0
 vim_tm2 = 0
 editor = None
 last_trigger = None
-APP_NAME = "Linux Achievements"
-APP_ICON = os.path.abspath("images/tux.png")
-vim_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(vim|vi|micro|nvim|view|vimdiff)(?:\s+|$)"
-vi_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(vi)(?:\s+|$)"
-ls_a_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*ls\s+-(?:[^\s]*a[^\s]*)(?:\s+|$)"
-poweroff_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*poweroff\s*$"
-reboot_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*reboot\s*$"
-shrc_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(?:vi|vim|nvim|micro|emacs|nano)\s+(?:~?\/)?\.[^\s]*shrc\s*$"
-rm_rf_find_re = r"^\s*rm\s+-(?:[^\s]*r[^\s]*f|[^\s]*f[^\s]*r|[^\s]*r\s+-[^\s]*f|[^\s]*f\s+-[^\s]*r)\s+\/\s*$"
-nano_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(nano)(?:\s+|$)"
-vim_nano_exst_find_re = r"""^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(?:vi|vim|nvim|micro|emacs|nano)\s+(?:-[^\s]+\s+)*(?:"([^"\\n]+)"|'([^'\\n]+)'|((?:[^\s\\n]|\\ )+))\s*$"""
-last_cmd_find_re = r"^\s*!!\s*$"
 vim_time_flag = False
 vim_close_flag = False
 open_vi_flag = False
@@ -60,5 +57,18 @@ nano_close_flag = False
 nano_open_flag = False
 vim_nano_exst_flag = False
 t1 = 0
-
 repeater_times = 0
+# Patterns
+BASH_PATTERN = r"^:!\s*(.*)"
+ACH_ID_PATTERN = r"\s+<\w+>\s*"
+PIPE_PATTERN = r"^(?!:!)([^|]+)\|(.*)"
+vim_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(vim|vi|micro|nvim|view|vimdiff)(?:\s+|$)"
+vi_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(vi)(?:\s+|$)"
+ls_a_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*ls\s+-(?:[^\s]*a[^\s]*)(?:\s+|$)"
+poweroff_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*poweroff\s*$"
+reboot_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*reboot\s*$"
+shrc_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(?:vi|vim|nvim|micro|emacs|nano)\s+(?:~?\/)?\.[^\s]*shrc\s*$"
+rm_rf_find_re = r"^\s*rm\s+-(?:[^\s]*r[^\s]*f|[^\s]*f[^\s]*r|[^\s]*r\s+-[^\s]*f|[^\s]*f\s+-[^\s]*r)\s+\/\s*$"
+nano_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(nano)(?:\s+|$)"
+vim_nano_exst_find_re = r"""^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(?:vi|vim|nvim|micro|emacs|nano)\s+(?:-[^\s]+\s+)*(?:"([^"\\n]+)"|'([^'\\n]+)'|((?:[^\s\\n]|\\ )+))\s*$"""
+last_cmd_find_re = r"^\s*!!\s*$"
