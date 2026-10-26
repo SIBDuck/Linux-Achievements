@@ -32,13 +32,6 @@ from achievement_manager import notifications
 class Parser:
     def __init__(self):
         pass
-    def paths(self):
-        BASE_DIR = pathlib.Path(__file__).resolve().parent
-        NEIGHBOR_DIR = BASE_DIR.parent / "data"
-
-        ACHIEVMENTS_PATH = NEIGHBOR_DIR / "achievements.json"
-        DATA_PATH = NEIGHBOR_DIR / "player data.json"
-        return (ACHIEVMENTS_PATH, DATA_PATH)
 
     def parse_list(self):
         v.parsed = re.sub(r'\b--color=auto\b', "", v.cmd)

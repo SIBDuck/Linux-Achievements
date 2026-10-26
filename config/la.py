@@ -22,12 +22,6 @@ import re
 import sys
 import io
 import json
-import cmd_parser
-
-# TODO: rewrite this fuckin' file!
-
-# Getting paths
-ach_path, data_path = cmd_parser.parser.paths()
 
 running = True
 import install_conf
@@ -266,10 +260,10 @@ Done: {data["achievements"][i]["done"]}""")
         count_u = 0
         count = 0
         print("Printing the list of locked achievements...")
-        with open(ach_path, "r", encoding='utf-8') as f:
+        with open(v.ACHIEVEMENT_PATH, "r", encoding='utf-8') as f:
             achs = json.load(f)
 
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(v.DATA_PATH, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
         achievements = achs
@@ -313,10 +307,10 @@ Difficulty: {achievements[i]["diff"]}""")
 
     @staticmethod
     def achid(id):
-        with open(ach_path, "r", encoding='utf-8') as f:
+        with open(v.ACHIEVEMENT_PATH, "r", encoding='utf-8') as f:
             achs = json.load(f)
 
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(v.DATA_PATH, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
         achievements = achs
