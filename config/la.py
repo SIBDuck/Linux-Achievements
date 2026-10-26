@@ -115,6 +115,7 @@ ach <ID> - print info about an achievement""")
 'clear' - clear the screen (could be non-working if you're running this script not from the system terminal)
 'fetch' - print the welcome screen
 use ':!' to use bash commands like in vim (pipes with utility-commands are supported)
+Hint: you could use 'more' and 'less' if you want to see a big list of something (e.g.: ach --all | more)
 'q'/'quit' - quit this program""")
         elif cmd == "q" or cmd == "quit":
             running = False
@@ -151,6 +152,8 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
             if rlog is not None:
                 Parser.parse_bash(rlog)
                 return
+        else:
+            print(f"Uknown command: '{cmd}'.")
 
 
     # Function to parse bash commands (`:!`)
