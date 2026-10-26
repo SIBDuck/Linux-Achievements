@@ -1,24 +1,24 @@
 # ====================================================================
-# КОРПОРАТИВНЫЕ ИИ-БОТЫ (ОБУЧЕНИЕ МОДЕЛЕЙ И ИИ-ПОИСК)
+# CORPORATIVE AI-BOTS (MODEL TRAINING, AI-SEARCH)
 # ====================================================================
 
-# OpenAI (ChatGPT, Sora, Поиск)
+# OpenAI (ChatGPT, Sora, etc.)
 User-agent: GPTBot
 Disallow: /
 User-agent: OAI-SearchBot
 Disallow: /
 
-# Google (Gemini, Сбор датасетов)
+# Google (Gemini, Data collection and search)
 User-agent: Google-Extended
 Disallow: /
 
-# Anthropic (Claude, Обучение и Поиск)
+# Anthropic (Claude, model training and search)
 User-agent: ClaudeBot
 Disallow: /
 User-agent: Claude-SearchBot
 Disallow: /
 
-# Meta (Llama и AI-ассистенты)
+# Meta (Llama и AI-assistants)
 User-agent: Meta-ExternalAgent
 Disallow: /
 User-agent: Meta-ExternalFetcher
@@ -28,7 +28,7 @@ Disallow: /
 User-agent: AppleBot-Extended
 Disallow: /
 
-# Microsoft & LinkedIn (Обучение ИИ)
+# Microsoft & LinkedIn (model training)
 User-agent: LinkedInBot
 Disallow: /
 User-agent: MSRBot
@@ -39,26 +39,26 @@ User-agent: Amazonbot
 Disallow: /
 
 # ====================================================================
-# НЕЗАВИСИМЫЕ ИИ-ПОИСКОВИКИ И СБОРЩИКИ ДАТАСЕТОВ
+# INDEPENDENT AI-SEARCHERS AND DATA COLLECTORS
 # ====================================================================
 
 # Perplexity AI
 User-agent: PerplexityBot
 Disallow: /
 
-# Common Crawl (Огромный архив, откуда ИИ качают данные гигабайтами)
+# Common Crawl
 User-agent: CCBot
 Disallow: /
 
-# Cohere (Разработка LLM для бизнеса)
+# Cohere (LLM for business)
 User-agent: cohere-ai
 Disallow: /
 
-# You.com (ИИ-поисковик)
+# You.com (AI-search)
 User-agent: YouBot
 Disallow: /
 
-# Diffbot (Коммерческий ИИ-скрейпинг)
+# Diffbot (AI-Powered Data Extraction)
 User-agent: Diffbot
 Disallow: /
 
@@ -66,15 +66,15 @@ Disallow: /
 User-agent: Omegabot
 Disallow: /
 
-# Imagesis (Сбор картинок для генеративного ИИ)
+# Imagesis (Image collection for generative AI)
 User-agent: img2dataset
 Disallow: /
 
 # ====================================================================
-# КИТАЙСКИЕ ИИ-БОТЫ И СКРЕЙПЕРЫ
+# Chinese AI Bots and Scrapers
 # ====================================================================
 
-# ByteDance (Владельцы TikTok, активно обучают свои LLM)
+# ByteDance
 User-agent: Bytespider
 Disallow: /
 
