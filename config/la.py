@@ -200,7 +200,7 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
 with 'shell --select' or shell shell_name""")
                 return
             except Exception as e:
-                print(f"Unexpected error occurred: {e}")
+                print(f"{e}")
 
     # Function to parse pipes
     @staticmethod
@@ -267,7 +267,7 @@ with 'shell --select' or shell shell_name""")
                 with 'shell --select' or shell shell_name""")
                 return
             except Exception as e:
-                print(f"An error occurred while parsing pipes: {e}")
+                print(f"{e}")
 
     @staticmethod
     def configs_installed():
@@ -329,7 +329,7 @@ or 'shell shell_name' (bash, zsh, fish are supported)")
                             data["shell"] = str(v.CURRENT_SHELL)
                             with open(v.DATA_PATH, "w", encoding="utf-8") as f:
                                 json.dump(data, f, ensure_ascii=False, indent=4)
-                            print(f"{shell.capitalize()} successfully selected  as a default shell.")
+                            print(f"{shell.capitalize()} successfully selected as a default shell.")
                             return
                     case "q" | "quit":
                         print("\nQuiting...")
@@ -354,7 +354,7 @@ or 'shell shell_name' (bash, zsh, fish are supported)")
                 data["shell"] = str(v.CURRENT_SHELL)
                 with open(v.DATA_PATH, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
-                print(f"{shell.capitalize()} successfully selected  as a default shell.")
+                print(f"{shell.capitalize()} successfully selected as a default shell.")
             case unknown:
                 print(f"Unknown shell typed: {unknown}")
 

@@ -127,6 +127,6 @@
         "zsh": false,
         "fish": false
     },
-    "shell": null,
+    "shell": "/usr/bin/zsh",
     "file_hash": "dcfc6a9112df27fe9f53cc06d29bddb8769d39978912847f8e8a4afbbd2fd077"
 }
