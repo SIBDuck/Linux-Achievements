@@ -98,7 +98,8 @@ ach <ID> - print info about an achievement""")
                 print("""Possible actions with 'shell':"
 shell -u - print a selected shell for using bash commands here
 shell --select - select a shell for using bash commands here (interactive utility)
-shell shell_name - select the shell for using bash commands here (bash, zsh and fish are supported)""")
+shell shell_name - select the shell for using bash commands here (bash, zsh and fish are supported)
+shell reset - reset the shell""")
                 return
             flag = args[0].lstrip("-").replace("-", "_")
             handlers = {
@@ -132,6 +133,7 @@ shell shell_name - select the shell for using bash commands here (bash, zsh and 
 shell -u - print a selected shell for using shell commands here
 shell --select - select a shell for using shell commands here (interactive utility)
 shell shell_name - select the shell for using sh commands here (bash, zsh and fish are supported)
+shell reset - reset the shell
 'fetch' - print the welcome screen
 use ':!' to use bash commands like in vim (pipes with utility-commands are supported)
 Hint: you could use 'more' and 'less' if you want to see a big list of something (e.g.: ach --all | more)
@@ -184,12 +186,13 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
             try:
                 with open(v.DATA_PATH, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                if data["shell"] is not None:
+                shell = data["shell"]
+                if shell is not None:
                     # Executing
                     result = subprocess.run(
                         bash_command,
                         shell=True,
-                        executable=v.CURRENT_SHELL,
+                        executable=shell,
                         text=True
                     )
                     # Printing an error if it is necessary
@@ -251,12 +254,13 @@ with 'shell --select' or shell shell_name""")
             try:
                 with open(v.DATA_PATH, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                if data["shell"] is not None:
+                shell = data["shell"]
+                if shell is not None:
                     # Execute the target Bash command with redirected standard input (stdin)
                     process = subprocess.Popen(
                         pipe_part,
                         shell=True,
-                        executable=v.CURRENT_SHELL,
+                        executable=shell,
                         stdin=subprocess.PIPE,
                         text=True
                     )
@@ -301,8 +305,11 @@ with 'shell --select' or shell shell_name""")
 class Shell:
     @staticmethod
     def using():
-        if v.CURRENT_SHELL is not None:
-            print(f"{v.CURRENT_SHELL.name} ({v.CURRENT_SHELL})")
+        with open(v.DATA_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if data["shell"] is not None:
+            shell_path = pathlib.Path(data["shell"])
+            print(f"{shell_path.name} ({shell_path})")
             return
         print(f"Shell is not selected. You can select it with 'shell --select' \
 or 'shell shell_name' (bash, zsh, fish are supported)")
@@ -341,6 +348,8 @@ or 'shell shell_name' (bash, zsh, fish are supported)")
                 return
     @staticmethod
     def select(shell):
+        with open(v.DATA_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
         match shell:
             case "bash" | "zsh" | "fish":
                 if shell == "bash":
@@ -349,12 +358,23 @@ or 'shell shell_name' (bash, zsh, fish are supported)")
                     v.CURRENT_SHELL = v.ZSH_BINARY_PATH
                 else:
                     v.CURRENT_SHELL = v.FISH_BINARY_PATH
-                with open(v.DATA_PATH, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                data["shell"] = str(v.CURRENT_SHELL)
-                with open(v.DATA_PATH, "w", encoding="utf-8") as f:
-                    json.dump(data, f, ensure_ascii=False, indent=4)
-                print(f"{shell.capitalize()} successfully selected as a default shell.")
+                current_shell = str(v.CURRENT_SHELL)
+                if current_shell != data["shell"]:
+                    data["shell"] = current_shell
+                    with open(v.DATA_PATH, "w", encoding="utf-8") as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
+                    print(f"{shell.capitalize()} successfully selected as a default shell")
+                    return
+                print(f"You already use {shell} as a default shell")
+            case "reset":
+                if data["shell"] is not None:
+                    data["shell"] = None
+                    with open(v.DATA_PATH, "w", encoding="utf-8") as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4)
+                    print("Shell reset successfully")
+                    return
+                print("Shell is already reset")
+
             case unknown:
                 print(f"Unknown shell typed: {unknown}")
 
