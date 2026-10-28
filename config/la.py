@@ -169,7 +169,7 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
         elif cmd[:2] == ":!":
             rlog = re.match(v.BASH_PATTERN, log)
             if rlog is not None:
-                Parser.parse_bash(rlog)
+                Parser.parse_shell(rlog)
                 return
         else:
             print(f"Uknown command: '{cmd}'.")
@@ -177,7 +177,7 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
 
     # Function to parse bash commands (`:!`)
     @staticmethod
-    def parse_bash(log):
+    def parse_shell(log):
         # Getting the command (on position 1 in a parsed string)
         bash_command = log.group(1)
         if bash_command:
