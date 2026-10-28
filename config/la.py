@@ -22,11 +22,12 @@ import re
 import sys
 import io
 import json
-
-running = True
 import install_conf
 import variables as v
 import psutil
+import shlex
+
+running = True
 
 
 class Parser:
@@ -40,9 +41,9 @@ class Parser:
         cmd, *args = parts
         cmd = cmd.lstrip()
         if not native_only:
-            rlog = re.match(v.PIPE_PATTERN, log)
+            rlog = re.search(v.PIPE_PATTERN, log)
             if rlog is not None:
-                Parser.parse_pipe(rlog)
+                Parser.parse_pipe(log)
                 return
         if cmd == "daemon":
             if not args:
@@ -84,14 +85,35 @@ ach <ID> - print info about an achievement""")
                 "all": Ach.all, "locked": Ach.locked,
                 "unlocked": Ach.unlocked
             }
+            ach_id_pattern = re.search(v.ACH_ID_PATTERN, log)
             if flag in handlers:
-                if re.match(v.ACH_ID_PATTERN, flag):
-                    flag = flag.lstrip("<").replace(">", "")
-                    Ach.achid(flag)
-                else:
-                    handlers[flag]()
+                handlers[flag]()
+            elif ach_id_pattern:
+                flag = ach_id_pattern.group(1).lstrip("<").replace(">", "")
+                Ach.achid(flag)
             else:
                 print(f"Unknown flag: '{args[0]}'")
+        elif cmd == "shell":
+            if not args:
+                print("""Possible actions with 'shell':"
+shell -u - print a selected shell for using bash commands here
+shell --select - select a shell for using bash commands here (interactive utility)
+shell shell_name - select the shell for using bash commands here (bash, zsh and fish are supported)""")
+                return
+            flag = args[0].lstrip("-").replace("-", "_")
+            handlers = {
+                "u": Shell.using, "select": Shell.select_util,
+            }
+            if flag in handlers:
+                handlers[flag]()
+            else:
+                shell_pattern = re.search(v.SHELL_SELECT_PATTERN, log)
+                if shell_pattern:
+                    shell = shell_pattern.group(1)
+                    Shell.select(shell)
+                else:
+                    print(f"Unknown flag: '{args[0]}'")
+
         elif cmd == "h" or cmd == "help":
             print("""'install-config' - install a shell script for logging commands
 'configs-installed' - print info about installed configs for the shells
@@ -106,7 +128,10 @@ ach <ID> - print info about an achievement""")
 'daemon --status' - print the daemon status
 'daemon --logs' - print logs
 'daemon --rm-logs' - delete logs
-'clear' - clear the screen (could be non-working if you're running this script not from the system terminal)
+'clear' - clear the screen
+shell -u - print a selected shell for using shell commands here
+shell --select - select a shell for using shell commands here (interactive utility)
+shell shell_name - select the shell for using sh commands here (bash, zsh and fish are supported)
 'fetch' - print the welcome screen
 use ':!' to use bash commands like in vim (pipes with utility-commands are supported)
 Hint: you could use 'more' and 'less' if you want to see a big list of something (e.g.: ach --all | more)
@@ -157,18 +182,92 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
         bash_command = log.group(1)
         if bash_command:
             try:
-                # Executing
-                result = subprocess.run(
-                    bash_command,
-                    shell=True,
-                    executable='/bin/bash',
-                    text=True
-                )
-                # Printing an error if it is necessary
-                if result.returncode != 0:
-                    print(result.stderr.strip())
+                with open(v.DATA_PATH, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if data["shell"] is not None:
+                    # Executing
+                    result = subprocess.run(
+                        bash_command,
+                        shell=True,
+                        executable=v.CURRENT_SHELL,
+                        text=True
+                    )
+                    # Printing an error if it is necessary
+                    if result.returncode != 0:
+                        print(result.stderr.strip())
+                    return
+                print("""Shell is not selected. Select a shell before running pipes or shell commands \
+with 'shell --select' or shell shell_name""")
+                return
             except Exception as e:
                 print(f"Unexpected error occurred: {e}")
+
+    # Function to parse pipes
+    @staticmethod
+    def parse_pipeline(log: str):
+        log = log.strip()
+        if not log:
+            return []
+        try:
+            # Tokenize the string
+            tokens = shlex.split(log, posix=False)
+        except ValueError as e:
+            print(f"Quotation mark parsing error: {e}")
+            return [log]
+        pipeline = []
+        current_cmd = []
+        for token in tokens:
+            if token == "|":
+                if current_cmd:
+                    pipeline.append(" ".join(current_cmd))
+                    current_cmd = []
+            else:
+                current_cmd.append(token)
+        if current_cmd:
+            pipeline.append(" ".join(current_cmd))
+
+        return pipeline
+
+    @staticmethod
+    def parse_pipe(log):
+        pipeline = Parser.parse_pipeline(log)
+        if pipeline:
+            # Native part
+            native_part = pipeline[0]
+            # Bash part
+            pipe_part = pipeline[1:]
+            # Intercept the stdout to RAM buffer to transfer the first command output to bash pipe
+            captured_output = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = captured_output
+            try:
+                # Parse native part
+                Parser.parse(native_part, native_only=True)
+            finally:
+                # Restore the stdout back to the system terminal
+                sys.stdout = old_stdout
+            # Extract the captured text from the RAM buffer to feed it into the Bash pipe
+            app_output_text = captured_output.getvalue()
+            try:
+                with open(v.DATA_PATH, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if data["shell"] is not None:
+                    # Execute the target Bash command with redirected standard input (stdin)
+                    process = subprocess.Popen(
+                        pipe_part,
+                        shell=True,
+                        executable=v.CURRENT_SHELL,
+                        stdin=subprocess.PIPE,
+                        text=True
+                    )
+                    # Feed the captured output string into the running Bash process via pipe
+                    process.communicate(input=app_output_text)
+                    return
+                print("""Shell is not selected. Select a shell before running pipes or shell commands \
+                with 'shell --select' or shell shell_name""")
+                return
+            except Exception as e:
+                print(f"An error occurred while parsing pipes: {e}")
 
     @staticmethod
     def configs_installed():
@@ -198,42 +297,66 @@ Type <h> or <help> for help, type <install-config> to install a shell script for
         for shell in shell_data:
             print(f"Shell: {shell}. Installed: {shell_data[shell]}")  # configs[i] = True | False
 
-    # Function to parse pipes
+
+class Shell:
     @staticmethod
-    def parse_pipe(log):
-        if log:
-            # Find native command part
-            app_part = log.group(1).strip()
-            # Find bash command after pipe part
-            bash_part = log.group(2).strip()
-            # Intercept the standard output stream  to RAM buffer to transfer the first command output to bash pipe
-            captured_output = io.StringIO()
-            old_stdout = sys.stdout
-            sys.stdout = captured_output
-
+    def using():
+        if v.CURRENT_SHELL is not None:
+            print(f"{v.CURRENT_SHELL.name} ({v.CURRENT_SHELL})")
+            return
+        print(f"Shell is not selected. You can select it with 'shell --select' \
+or 'shell shell_name' (bash, zsh, fish are supported)")
+    @staticmethod
+    def select_util():
+        print("This script selects a shell for using shell commands")
+        print("Type 'q' or 'quit' to quit")
+        while True:
             try:
-                # Parse native part
-                Parser.parse(app_part, native_only=True)
-            finally:
-                # Restore the standard output stream back to the system terminal
-                sys.stdout = old_stdout
-            # Extract the captured text from the RAM buffer to feed it into the Bash pipe
-            app_output_text = captured_output.getvalue()
-            try:
-                # Execute the target Bash command with redirected standard input (stdin)
-                process = subprocess.Popen(
-                    bash_part,
-                    shell=True,
-                    executable='/bin/bash',
-                    stdin=subprocess.PIPE,
-                    text=True
-                )
-                # Feed the captured output string into the running Bash process via pipe
-                process.communicate(input=app_output_text)
-            except Exception as e:
-                print("During parsing pipes an error occurred:")
-                print(f"{e}")
-
+                time.sleep(0.01)
+                shell = input("(shell) Which shell would you like to use (bash, zsh or fish)? > ")
+                match shell:
+                    case "bash" | "zsh" | "fish":
+                        ans = input(f"(shell) Are you sure you want to select {shell} [Y/n] > ")
+                        if ans.lower() == "y" or ans == "":
+                            if shell == "bash":
+                                v.CURRENT_SHELL = v.BASH_BINARY_PATH
+                            elif shell == "zsh":
+                                v.CURRENT_SHELL = v.ZSH_BINARY_PATH
+                            else:
+                                v.CURRENT_SHELL = v.FISH_BINARY_PATH
+                            with open(v.DATA_PATH, "r", encoding="utf-8") as f:
+                                data = json.load(f)
+                            data["shell"] = str(v.CURRENT_SHELL)
+                            with open(v.DATA_PATH, "w", encoding="utf-8") as f:
+                                json.dump(data, f, ensure_ascii=False, indent=4)
+                            print(f"{shell.capitalize()} successfully selected  as a default shell.")
+                            return
+                    case "q" | "quit":
+                        print("\nQuiting...")
+                        return
+                    case unknown:
+                        print(f"Unknown shell typed: {unknown}")
+            except KeyboardInterrupt:
+                print("\nQuiting...")
+                return
+    @staticmethod
+    def select(shell):
+        match shell:
+            case "bash" | "zsh" | "fish":
+                if shell == "bash":
+                    v.CURRENT_SHELL = v.BASH_BINARY_PATH
+                elif shell == "zsh":
+                    v.CURRENT_SHELL = v.ZSH_BINARY_PATH
+                else:
+                    v.CURRENT_SHELL = v.FISH_BINARY_PATH
+                with open(v.DATA_PATH, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                data["shell"] = str(v.CURRENT_SHELL)
+                with open(v.DATA_PATH, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+                print(f"{shell.capitalize()} successfully selected  as a default shell.")
+            case unknown:
+                print(f"Unknown shell typed: {unknown}")
 
 class Ach:
     @staticmethod
@@ -321,7 +444,7 @@ Title: {achievements[i]["title"]}
 Description: {achievements[i]["description"]}
 Difficulty: {achievements[i]["diff"]}
 Done: {data["achievements"][i]["done"]}
-Secret: {achs["achievements"]["en"][i]["secret"]}""")
+Secret: {achs[i]["secret"]}""")
                 return
         else:
             print(f"Cannot find the achievement: '{id}'")

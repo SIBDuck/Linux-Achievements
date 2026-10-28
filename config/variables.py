@@ -22,7 +22,13 @@ import pathlib
 DAEMON_NAME = "lad"
 UTILITY_NAME = "la"
 APP_NAME = "Linux Achievements"
+
+CURRENT_SHELL = None
 # Paths
+# Shells
+BASH_BINARY_PATH = pathlib.Path("/usr/bin/bash")
+ZSH_BINARY_PATH = pathlib.Path("/usr/bin/zsh")
+FISH_BINARY_PATH = pathlib.Path("/usr/bin/fish")
 HOME_DIR = pathlib.Path.home()
 PATH = os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}") + "/linux-achievements"
 PATH_LCMD = PATH + "/last_cmd"
@@ -59,8 +65,9 @@ vim_nano_exst_flag = False
 t1 = 0
 repeater_times = 0
 # Patterns
-BASH_PATTERN = r"^:!\s*(.*)"
-ACH_ID_PATTERN = r"\s+<\w+>\s*"
+BASH_PATTERN = r"^:!\s*(.*?)\s*$"
+ACH_ID_PATTERN = r"^\s*ach\s+<([\w.]+)>\s*$"
+SHELL_SELECT_PATTERN = r"^\s*shell\s+([\w-]+)\s*$"
 PIPE_PATTERN = r"^(?!:!)([^|]+)\|(.*)"
 vim_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(vim|vi|micro|nvim|view|vimdiff)(?:\s+|$)"
 vi_find_re = r"^\s*(?:(?:sudo|su|env|time|nice|setsid|nohup|stdbuf)\s+(?:-[^\s]+\s+)*)*(vi)(?:\s+|$)"

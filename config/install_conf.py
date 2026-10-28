@@ -37,7 +37,7 @@ class Installer:
     @staticmethod
     def install_config():
         print("""This script installs the shell script for logging commands""")
-        print("""Type <q> or <quit> to quit""")
+        print("""Type 'q' or 'quit' to quit""")
         while True:
             try:
                 time.sleep(0.01)
